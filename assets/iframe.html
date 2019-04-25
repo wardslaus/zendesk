@@ -1,0 +1,98 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+    <script>
+        var zclient = ZAFClient.init();
+
+        function dispatchMessageTo(data) {
+            var topBarClientPromise = zclient.get('instances').then(function (instancesData) {
+
+                var instances = instancesData.instances;
+                var targetInstances = [];
+                for (var instanceGuid in instances) {
+                    if (instances[instanceGuid].location == data.location) {
+                        targetInstances.push(zclient.instance(instanceGuid));
+                    }
+                }
+
+                return targetInstances;
+            });
+
+            topBarClientPromise.then(function (targetInstances) {
+                // trigger an incoming_call event on the top bar
+                targetInstances.forEach(function (client) {
+                    if (client && client != null) client.trigger(data.name, data.payload);
+                });
+            });
+        }
+
+        function setState(data) {
+            var origin = getParameterByName("origin");
+            var app_guid = getParameterByName("app_guid");
+            
+            frame.src = data.view.location + "?origin=" + origin + "&app_guid=" + app_guid;
+        }
+
+        function getParameterByName(name, url) {
+            if (!url) {
+                url = window.location.href;
+            }
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+    </script>
+    <script>
+        function setState(data) {
+            var origin = getParameterByName("origin");
+            var app_guid = getParameterByName("app_guid");
+            
+            frame.src = data.view.location + "?origin=" + origin + "&app_guid=" + app_guid;
+        }
+        
+        function buildUrl(metadata, origin, app_guid, accessToken) {
+            var parts = [
+                metadata.settings.OneAgentWeb,
+                "?theme=zendesk_v2",
+                "&onecontactinstance=" + metadata.settings.Instance,
+                "&origin=" + origin,
+                "&app_guid=" + app_guid,
+                "&appKey=" + accessToken
+            ];
+
+            return parts.join("");
+        }
+        
+        var origin = "";
+        zclient.metadata()
+            .then(function (metadata) {
+                var app_guid = getParameterByName("app_guid");
+                origin = getParameterByName("origin");
+                frame.src = buildUrl(metadata, location.origin, app_guid, metadata.settings.AccessToken);
+            });
+
+    function bindEvent(element, eventName, eventHandler) {
+        if (element.addEventListener) {
+            element.addEventListener(eventName, eventHandler, false);
+        } else if (element.attachEvent) {
+            element.attachEvent('on' + eventName, eventHandler);
+        }
+    }
+
+    bindEvent(window, "message", function (evt) {
+        if (evt.origin != origin) {
+            window.parent.postMessage(evt.data, "*");
+        }
+        else {
+            frame.contentWindow.postMessage(evt.data, "*");
+        }
+    }, true);
+    </script>
+</head>
+<body>
+<iframe id="frame" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:998999;" allow="geolocation; microphone; camera; midi; encrypted-media"></iframe>
+</body>
+</html>

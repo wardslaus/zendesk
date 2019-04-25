@@ -1,0 +1,57 @@
+{
+  "name": "OneAgent",
+  "author": {
+    "name": "© Dominic Wardslaus 2019 - All Rights Reserved.",
+    "email": "dominic@wardslaus.co.za",
+    "url": "https://wardslaus.co.za"
+  },
+  "defaultLocale": "en",
+  "private": false,
+  "location": {
+    "support": {
+      "ticket_sidebar": "https://zendeskappconnector.azurewebsites.net/ticketsidebar",
+      "top_bar": "{{setting.OneAgentWeb}}?theme=zendesk_v2&onecontactinstance={{setting.Instance}}&appKey={{setting.AccessToken}}&ticketCreationRule={{setting.TicketCreationRule}}&extraParameters={{setting.ExtraParameters}}",
+      "user_sidebar": "https://zendeskappconnector.azurewebsites.net/usersidebar",
+      "background": "https://zendeskappconnector.azurewebsites.net/background"
+    }
+  },
+  "version": "2.0",
+  "frameworkVersion": "2.0",
+  "parameters": [
+    {
+      "name": "OneAgentWeb",
+      "label": "OneAgentWeb URL",
+      "type": "text",
+      "default": "https://oc254.onecontact.eu/OneAgentWeb",
+      "required": true
+    },
+    {
+      "name": "Instance",
+      "label": "OneContact instance",
+      "type": "text",
+      "default": "dev",
+      "required": true
+    },
+    {
+      "name": "AccessToken",
+      "label": "Access Token",
+      "type": "text",
+      "default": "",
+      "required": false
+    },
+    {
+      "name": "TicketCreationRule",
+      "label": "Ticket Creation Rule",
+      "type": "text",
+      "default": "noOpenTickets",
+      "required": true
+    },
+    {
+      "name": "ExtraParameters",
+      "label": "Extra Parameters",
+      "type": "text",
+      "default": "{}",
+      "required": false
+    }
+  ]
+}
