@@ -1,4 +1,4 @@
-# App name
+# Zendesk App 
 
 [brief description of the app]
 
